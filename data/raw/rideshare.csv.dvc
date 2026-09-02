@@ -1,0 +1,5 @@
+outs:
+- md5: 640064b8b005ef76e863988d30fc589b
+  size: 226257
+  hash: md5
+  path: rideshare.csv
