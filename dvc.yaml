@@ -1,0 +1,35 @@
+stages:
+  validate:
+    cmd: python scripts/validate_data.py
+    deps:
+      - data/raw/rideshare.csv
+      - scripts/validate_data.py
+
+  features:
+    cmd: python scripts/feature_engineering.py
+    deps:
+      - data/raw/rideshare.csv
+      - scripts/feature_engineering.py
+    outs:
+      - features/pricing_features.csv
+
+  train:
+    cmd: python scripts/train.py
+    deps:
+      - features/pricing_features.csv
+      - scripts/train.py
+    params:
+      - model
+    outs:
+      - models/surge_model.joblib
+
+  evaluate:
+    cmd: python scripts/validate_model.py
+    deps:
+      - features/pricing_features.csv
+      - models/surge_model.joblib
+      - scripts/validate_model.py
+    params:
+      - thresholds.max_mae
+    outs:
+      - reports/model_validation.json
