@@ -1,0 +1,75 @@
+schema: '2.0'
+stages:
+  validate:
+    cmd: python scripts/validate_data.py
+    deps:
+    - path: data/raw/rideshare.csv
+      hash: md5
+      md5: 640064b8b005ef76e863988d30fc589b
+      size: 226257
+    - path: scripts/validate_data.py
+      hash: md5
+      md5: a304236c7c60a3f821f91186ecf8cafd
+      size: 1403
+  features:
+    cmd: python scripts/feature_engineering.py
+    deps:
+    - path: data/raw/rideshare.csv
+      hash: md5
+      md5: 640064b8b005ef76e863988d30fc589b
+      size: 226257
+    - path: scripts/feature_engineering.py
+      hash: md5
+      md5: 370b83c6bce322f387e0bc3fcb64ce70
+      size: 754
+    outs:
+    - path: features/pricing_features.csv
+      hash: md5
+      md5: 4720780df199bfae5d31d9a84f5c1ccd
+      size: 329431
+  train:
+    cmd: python scripts/train.py
+    deps:
+    - path: features/pricing_features.csv
+      hash: md5
+      md5: 4720780df199bfae5d31d9a84f5c1ccd
+      size: 329431
+    - path: scripts/train.py
+      hash: md5
+      md5: d9291e014b407edddc56a029a6cce4b5
+      size: 1893
+    params:
+      params.yaml:
+        model:
+          n_estimators: 150
+          max_depth: 8
+          random_state: 42
+          test_size: 0.2
+    outs:
+    - path: models/surge_model.joblib
+      hash: md5
+      md5: 0803dadcedffe13bb2c9b0519eeaa2a8
+      size: 5149377
+  evaluate:
+    cmd: python scripts/validate_model.py
+    deps:
+    - path: features/pricing_features.csv
+      hash: md5
+      md5: 4720780df199bfae5d31d9a84f5c1ccd
+      size: 329431
+    - path: models/surge_model.joblib
+      hash: md5
+      md5: 0803dadcedffe13bb2c9b0519eeaa2a8
+      size: 5149377
+    - path: scripts/validate_model.py
+      hash: md5
+      md5: 7c997df6a7b89f20eb9665eb7e81750c
+      size: 1381
+    params:
+      params.yaml:
+        thresholds.max_mae: 0.15
+    outs:
+    - path: reports/model_validation.json
+      hash: md5
+      md5: 542558e7a5fe6c93cf59cbf101fb82c4
+      size: 110
